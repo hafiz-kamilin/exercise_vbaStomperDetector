@@ -50,7 +50,7 @@ def parseFileCheck(argsInput):
 
             print("\nThe file parsed is not a DOCM file.\n")
 
-        # if the html file can be opened...
+        # if the file can be opened...
         else:
 
             return vbaparser
