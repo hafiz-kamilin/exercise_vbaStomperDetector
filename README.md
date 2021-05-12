@@ -18,6 +18,9 @@ It work by implementing the number of code lines and characters comparison betwe
 
 Alternatively, if you prefer not to install python and follow these steps, you can download the compiled .exe version at [here](https://github.com/hafiz-kamilin/vba_stomper_detector/releases/tag/v1.0). To execute the file, cd the console to the current directory and execute `stomperDetector.exe --dir ./<yourfile>.docm`.
 
+## Note
+I have coded this as a requirement for a job interview. I might not update the code again in future.
+
 ## Declaration
 
 The pcode2code uploaded into this repository is taken directly from [Big5-sec](https://github.com/Big5-sec/pcode2code) without any modification on 11 May 2021.
