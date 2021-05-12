@@ -16,7 +16,7 @@ It work by implementing the number of code lines comparison between the decompil
 2. Download the [pcode2code.py](https://github.com/Big5-sec/pcode2code/blob/master/pcode2code/pcode2code.py) source code and put it on the same directory as the [stomperDetector.py](https://github.com/hafiz-kamilin/vba_stomper_detector/blob/main/stomperDetector.py).
 3. cd the console to the current directory and execute `python stomperDetector.py --dir ./<yourfile>.docm`.
 
-Alternatively, if you prefer not to install python and follow these step, you can download the compiled .exe version at [here](https://github.com/hafiz-kamilin/vba_stomper_detector/releases/tag/v1.0). To execute the file, cd the console to the current directory and execute `stomperDetector.exe --dir ./<yourfile>.docm`.
+Alternatively, if you prefer not to install python and follow these steps, you can download the compiled .exe version at [here](https://github.com/hafiz-kamilin/vba_stomper_detector/releases/tag/v1.0). To execute the file, cd the console to the current directory and execute `stomperDetector.exe --dir ./<yourfile>.docm`.
 
 ## Declaration
 
