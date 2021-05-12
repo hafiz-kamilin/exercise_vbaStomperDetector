@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 __author__ = "Mohd Hafizuddin Bin Kamilin"
-__version__ = "0.0.1"
-__date__ = "11 May 2021"
+__version__ = "1.0"
+__date__ = "12 May 2021"
 
 # for parsing the vba source file
 from oletools.olevba import VBA_Parser, TYPE_OLE, TYPE_OpenXML, TYPE_Word2003_XML, TYPE_MHTML
@@ -48,7 +48,7 @@ def parseFileCheck(argsInput):
         # most likely a wrong file was parsed
         except:
 
-            print("\nThe file parsed is not a DOCM file.\n")
+            print("\nThe file parsed is not a an Microsoft Office file.\n")
 
         # if the file can be opened...
         else:
@@ -126,67 +126,76 @@ def codeExtractor(vbaparser, argsInput):
 # remove the unnecessary header from the code
 def headerRemover(refinedSourceCode, refinedpCode):
 
+    result = None
     # find the element that exist in both list and save in similarityFound list
     baseSet = set(refinedSourceCode)
     similarityFound = list(baseSet.intersection(refinedpCode))
 
-    # list format [element found, the position of the element in either refinedSourceCode or refinedpCode]
-    elementValue = None
-    elementPosition = None
+    # if there is no similarity found, that mean the source code was totally destroyed (stomped)
+    # if the only similarity found is the "End Sub", then there is none (stomped)
+    if ((similarityFound != []) and (similarityFound != ["End Sub"])):
 
-    # find the position of each srcPosition's element in the refinedSourceCode and refinedpCode
-    for element in range(len(similarityFound)):
+        # list format [element found, the position of the element in either refinedSourceCode or refinedpCode]
+        elementValue = None
+        elementPosition = None
 
-        for line in range(len(refinedSourceCode)):
+        # find the position of each srcPosition's element in the refinedSourceCode and refinedpCode
+        for element in range(len(similarityFound)):
 
-            # the first similar element found is stored in srcPosition
-            if (refinedSourceCode[line] == similarityFound[element]):
+            for line in range(len(refinedSourceCode)):
 
-                if ((elementValue == None) and (elementPosition == None)):
+                # the first similar element found is stored in srcPosition
+                if (refinedSourceCode[line] == similarityFound[element]):
 
-                    elementValue = similarityFound[element]
-                    elementPosition = line
+                    if ((elementValue == None) and (elementPosition == None)):
 
-                elif (elementPosition >= line):
+                        elementValue = similarityFound[element]
+                        elementPosition = line
 
-                    elementValue = similarityFound[element]
-                    elementPosition = line
+                    elif (elementPosition >= line):
 
-        for line in range(len(refinedpCode)):
+                        elementValue = similarityFound[element]
+                        elementPosition = line
 
-            # the first similar element found is stored in srcPosition
-            if (refinedpCode[line] == similarityFound[element]):
+            for line in range(len(refinedpCode)):
 
-                if (elementPosition >= line):
+                # the first similar element found is stored in srcPosition
+                if (refinedpCode[line] == similarityFound[element]):
 
-                    elementValue = similarityFound[element]
-                    elementPosition = line
+                    if (elementPosition >= line):
 
-    # truncate every line in refinedSourceCode and stop when the line
-    # contained the elementValue was found
-    while True:
+                        elementValue = similarityFound[element]
+                        elementPosition = line
 
-        if (refinedSourceCode[0] != elementValue):
+        # truncate every line in refinedSourceCode and stop when the line
+        # contained the elementValue was found
+        while True:
 
-            refinedSourceCode.pop(0)
-        
-        else:
+            if (refinedSourceCode[0] != elementValue):
 
-            break
+                refinedSourceCode.pop(0)
+            
+            else:
 
-    # truncate every line in refinedpCode and stop when the line
-    # contained the elementValue was found
-    while True:
+                break
 
-        if (refinedpCode[0] != elementValue):
+        # truncate every line in refinedpCode and stop when the line
+        # contained the elementValue was found
+        while True:
 
-            refinedpCode.pop(0)
-        
-        else:
+            if (refinedpCode[0] != elementValue):
 
-            break
+                refinedpCode.pop(0)
+            
+            else:
 
-    return refinedSourceCode, refinedpCode
+                break
+
+    else:
+
+        result = True
+
+    return result, refinedSourceCode, refinedpCode
 
 # check if the source code is stomped or not
 def checkStopedOrNot(refinedSourceCode, refinedpCode):
@@ -213,7 +222,7 @@ def checkStopedOrNot(refinedSourceCode, refinedpCode):
 # main
 if __name__ == "__main__":
 
-    # parse the docm file
+    # parse the file
     vbaparser = parseFileCheck(args.dir)
 
     if (vbaparser is not None):
@@ -227,19 +236,22 @@ if __name__ == "__main__":
             # extract the source code and p-code
             refinedSourceCode, refinedpCode = codeExtractor(vbaparser, args.dir)
             # remove header from the extracted codes
-            refinedSourceCode, refinedpCode = headerRemover(refinedSourceCode, refinedpCode)
-            # check if code is stomped or not
-            result = checkStopedOrNot(refinedSourceCode, refinedpCode)
+            result, refinedSourceCode, refinedpCode = headerRemover(refinedSourceCode, refinedpCode)
+
+            if (result is None):
+
+                # check if code is stomped or not
+                result = checkStopedOrNot(refinedSourceCode, refinedpCode)
         
             if (result is True):
 
                 print("\nThe length of decompiled p-code and source code is not same.")
-                print("This shows the DOCM file contains VBA stomped code!\n")
+                print("This shows the file contains VBA stomped code!\n")
             
             else:
 
                 print("\nThe length of decompiled p-code and source code is same.")
-                print("Although this shows the DOCM file does not contains VBA stomped code, user should still proceed with caution.\n")
+                print("Although this shows the file does not contains VBA stomped code, user should still proceed with caution.\n")
 
         else:
 
