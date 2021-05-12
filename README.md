@@ -1,4 +1,4 @@
-# Code Stomper Detector
+# VBA Stomper Detector
 
 ## Introduction
 
