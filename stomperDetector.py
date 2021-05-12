@@ -68,43 +68,31 @@ def checkVbaExist(vbaparser):
         print("\nNo VBA Macros found.")
         return False
 
-def compareForAbnormality(vbaparser, argsInput):
+# extract the source code and p-code
+def codeExtractor(vbaparser, argsInput):
 
     """ using the olevba tool """
 
     # extract the vba code from the file
-    for (_, _, _, sourceCode) in vbaparser.extract_macros():
+    sourceCode = vbaparser.reveal()
+    # convert \r\n to \n
+    sourceCode = "\n".join(sourceCode.splitlines())
+    # convert str to list where \n act as a seperator
+    sourceCode = list(sourceCode.split("\n"))
 
-        # remove the code attributes from the extracted source code
-        # NOTE: below shows the example of the attributes from the sourceCode,
-        #   it is useless for comparing it with decoded p-code.
-        #   Attribute VB_Name = "ThisDocument"        
-        #   Attribute VB_Base = "1Normal.ThisDocument"
-        #   Attribute VB_GlobalNameSpace = False      
-        #   Attribute VB_Creatable = False
-        #   Attribute VB_PredeclaredId = True
-        #   Attribute VB_Exposed = True
-        #   Attribute VB_TemplateDerived = True
-        #   Attribute VB_Customizable = True
-        sourceCode = sourceCode.split("\n",8)[8]
-        # convert \r\n to \n
-        sourceCode = "\n".join(sourceCode.splitlines())
-        # convert str to list where \n act as a seperator
-        sourceCode = list(sourceCode.split("\n"))
+    # remove trailing and leading space from list's str
+    for line in range(len(sourceCode)):
 
-        # remove trailing and leading space from list's str
-        for line in range(len(sourceCode)):
+        sourceCode[line] = sourceCode[line].lstrip()
 
-            sourceCode[line] = sourceCode[line].lstrip()
+    refinedSourceCode = []
 
-        refinedSourceCode = []
+    # remove empty str from list
+    for line in range(len(sourceCode)):
 
-        # remove empty str from list
-        for line in range(len(sourceCode)):
+        if (sourceCode[line] != ""):
 
-            if (sourceCode[line] != ""):
-
-                refinedSourceCode.append(sourceCode[line])
+            refinedSourceCode.append(sourceCode[line])
 
     """ using the pcode2code """
 
@@ -114,16 +102,8 @@ def compareForAbnormality(vbaparser, argsInput):
     # read the decoded text file 
     with open ("decoded_pcode.txt", "r") as myfile:
 
-        decodedSource=myfile.read()
+        pCode=myfile.read()
 
-    # strip the decoded file information
-    # NOTE: below shows the example of decoded file information that need to be stripped
-    #    stream : VBA/ThisDocument - 74307 bytes
-    #
-    #    ########################################
-    #
-    #
-    pCode = decodedSource.split("\n",6)[6]
     # convert str to list where \n act as a seperator
     pCode = list(pCode.split("\n"))
 
@@ -141,11 +121,88 @@ def compareForAbnormality(vbaparser, argsInput):
 
             refinedpCode.append(pCode[line])
 
+    return refinedSourceCode, refinedpCode
+
+# remove the unnecessary header from the code
+def headerRemover(refinedSourceCode, refinedpCode):
+
+    # find the element that exist in both list and save in similarityFound list
+    baseSet = set(refinedSourceCode)
+    similarityFound = list(baseSet.intersection(refinedpCode))
+
+    # list format [element found, the position of the element in either refinedSourceCode or refinedpCode]
+    elementValue = None
+    elementPosition = None
+
+    # find the position of each srcPosition's element in the refinedSourceCode and refinedpCode
+    for element in range(len(similarityFound)):
+
+        for line in range(len(refinedSourceCode)):
+
+            # the first similar element found is stored in srcPosition
+            if (refinedSourceCode[line] == similarityFound[element]):
+
+                if ((elementValue == None) and (elementPosition == None)):
+
+                    elementValue = similarityFound[element]
+                    elementPosition = line
+
+                elif (elementPosition >= line):
+
+                    elementValue = similarityFound[element]
+                    elementPosition = line
+
+        for line in range(len(refinedpCode)):
+
+            # the first similar element found is stored in srcPosition
+            if (refinedpCode[line] == similarityFound[element]):
+
+                if (elementPosition >= line):
+
+                    elementValue = similarityFound[element]
+                    elementPosition = line
+
+    # truncate every line in refinedSourceCode and stop when the line
+    # contained the elementValue was found
+    while True:
+
+        if (refinedSourceCode[0] != elementValue):
+
+            refinedSourceCode.pop(0)
+        
+        else:
+
+            break
+
+    # truncate every line in refinedpCode and stop when the line
+    # contained the elementValue was found
+    while True:
+
+        if (refinedpCode[0] != elementValue):
+
+            refinedpCode.pop(0)
+        
+        else:
+
+            break
+
+    return refinedSourceCode, refinedpCode
+
+# check if the source code is stomped or not
+def checkStopedOrNot(refinedSourceCode, refinedpCode):
+
     """ check if the number of lines is same or not """
 
-    if (len(refinedSourceCode) == (refinedpCode)):
+    if (len(refinedSourceCode) == len(refinedpCode)):
 
-        # the source code is not stomped
+        for line in range(len(refinedSourceCode)):
+
+            if (refinedSourceCode[line] != refinedpCode[line]):
+
+                # source code is stomped
+                return True
+
+        # there is no disparity between the p-code and source code detected
         return False
     
     else:
@@ -167,8 +224,12 @@ if __name__ == "__main__":
         # macros exist
         if (existOrNot is True):
 
+            # extract the source code and p-code
+            refinedSourceCode, refinedpCode = codeExtractor(vbaparser, args.dir)
+            # remove header from the extracted codes
+            refinedSourceCode, refinedpCode = headerRemover(refinedSourceCode, refinedpCode)
             # check if code is stomped or not
-            result = compareForAbnormality(vbaparser, args.dir)
+            result = checkStopedOrNot(refinedSourceCode, refinedpCode)
         
             if (result is True):
 
