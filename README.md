@@ -6,7 +6,7 @@
   <img src = "https://raw.githubusercontent.com/hafiz-kamilin/vba_stomper_detector/main/flowchart.png" width = "395" height = "653"/>
 </p>
 
-This is an example concept that shows how we can detect the disparity in compiled VBA macro (known as p-code) and VBA macro source code in DOCM file. This disparity reveal that the DOCM file was tampered to hide the malicious code from being detected by the Anti-Virus.
+This is an example concept that shows how we can detect the disparity in compiled VBA macro (known as p-code) and VBA macro source code in Microsoft Office file. This disparity reveal that the Microsoft Office file was tampered to hide the malicious code from being detected by the Anti-Virus.
 
 It work by implementing the number of code lines and characters comparison between the decompiled p-code and the original source code. 
 
@@ -19,7 +19,8 @@ It work by implementing the number of code lines and characters comparison betwe
 Alternatively, if you prefer not to install python and follow these steps, you can download the compiled .exe version at [here](https://github.com/hafiz-kamilin/vba_stomper_detector/releases/tag/v1.0). To execute the file, cd the console to the current directory and execute `stomperDetector.exe --dir ./<yourfile>.docm`.
 
 ## Note
-I have coded this as a requirement for a job interview. I might not update the code again in future.
+
+I have tested the stomperDetector on all stomped files provided by [clr2of8](https://github.com/clr2of8/VBAstomp) and this program is compatible with all files created by Microsoft Office program such as Excel, and Word from version 2003x32, 2007x32, 2010x32, 2013x32, 2013x64, 2016x32, 2016x64, 2019x32, 2019x64.
 
 ## Declaration
 
