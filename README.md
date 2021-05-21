@@ -8,7 +8,7 @@
 
 This is an example concept that shows how we can detect the disparity in compiled VBA macro (known as p-code) and VBA macro source code in Microsoft Office file. This disparity reveal that the Microsoft Office file was tampered to hide the malicious code from being detected by the Anti-Virus.
 
-It work by implementing the number of code lines and characters comparison between the decompiled p-code and the original source code. 
+It work by comparing the number of code lines and characters on each lines with automated header removal between the decompiled p-code and the original source code. 
 
 ## Test run
 
