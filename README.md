@@ -24,4 +24,4 @@ I have tested the stomperDetector on all stomped files provided by [clr2of8](htt
 
 ## Declaration
 
-The pcode2code uploaded into this repository is taken directly from [Big5-sec](https://github.com/Big5-sec/pcode2code) without any modification on 11 May 2021.
+The `pcode2code.py` uploaded into this repository is taken directly from [Big5-sec](https://github.com/Big5-sec/pcode2code/blob/master/pcode2code/pcode2code.py) without any modification on 11 May 2021.
