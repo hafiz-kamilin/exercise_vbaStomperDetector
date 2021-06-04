@@ -3,7 +3,7 @@
 ## Introduction
 
 <p align = "center">
-  <img src = "https://raw.githubusercontent.com/hafiz-kamilin/vba_stomper_detector/main/flowchart.png" width = "395" height = "653"/>
+  <img src = "https://raw.githubusercontent.com/hafiz-kamilin/exercise_vbaStomperDetector/main/flowchart.png" width = "395" height = "653"/>
 </p>
 
 This is an example concept that shows how we can detect the disparity in compiled VBA macro (known as p-code) and VBA macro source code in Microsoft Office file. This disparity reveal that the Microsoft Office file was tampered to hide the malicious code from being detected by the Anti-Virus.
